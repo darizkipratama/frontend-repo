@@ -1,3 +1,4 @@
+'use client';
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -6,8 +7,11 @@ const theme = createTheme({
       main: '#1976d2',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#9c27b0',
     },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
   },
 });
 
