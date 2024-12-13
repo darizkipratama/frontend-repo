@@ -1,54 +1,69 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
+  age: number;
 }
 
-export interface userState {
+export interface UserState {
   userData: User[];
   loading: boolean;
   error?: string;
 };
 
+const initialUserState : UserState = {
+  userData : [],
+  loading: false,
+  error: ""
+};
+
+export const fetchUser = createAsyncThunk(
+  'user/fetchUser',
+  async() => {
+    const data = await axios.get('http://localhost:3001/api/users',{
+      headers : {
+        'Authorization': 'Bearer $impleTok3N',
+        'Content-Type': 'application/json',
+      }
+    });
+
+    return data.data;
+  }
+);
+
 const userSlices = createSlice({
   name: 'users',
-  initialState : {
-    userData: [],
-    loading: false,
-    error: "",
+  initialState: initialUserState,
+  reducers : {
+    setUsers: (state:UserState, action) => {
+      state.userData = action.payload;
+    }
   },
-  reducers : {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUser.pending, (state:userState) => {
+      .addCase(fetchUser.pending, (state:UserState) => {
         state.loading = true;
         state.error = "";
       })
-      .addCase(fetchUser.fulfilled, (state:userState, action) => {
+      .addCase(fetchUser.fulfilled, (state:UserState, action) => {
         state.loading = false;
-        // state.userData.push();
+        userSlices.caseReducers.setUsers(state, action);
+        console.log(state.userData)
       })
-      .addCase(fetchUser.rejected, (state:userState, action) => {
+      .addCase(fetchUser.rejected, (state:UserState, action) => {
         state.loading = false;
         state.error = action.error.message;
       });
   },
 });
 
-
 export default userSlices.reducer;
 
 
-export const fetchUser = createAsyncThunk(
-  'user/fetchUser',
-  async() => {
-    const data = await fetch('/api/user-fetch');
-    console.log(data);
-    return data;
-  }
-);
+
 
 // export const updateUser = createAsyncThunk(
 //   'user/updateUser',
